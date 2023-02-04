@@ -6,7 +6,5 @@ Projeto que apresenta uma possível solução, para um cenário hipotético, ond
 Segue o diagrama da solução, abaixo: <br>
 (pode ser visto mais adequadamente no draw io, ou abrindo a imagem em um visualizador)
 
-<br>
-<br>
 ![](/arquitetura.drawio.png)
 
