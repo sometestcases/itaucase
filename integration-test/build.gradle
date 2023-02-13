@@ -1,0 +1,100 @@
+buildscript {
+    ext {
+        springBootVersion = '2.7.1'
+        restAssuredVersion = '5.1.1'
+        cucumberVersion = '7.2.3'
+        fixtureVersion = '3.1.0'
+    }
+
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath('ru.alfalab.gradle:cucumber-reporting-gradle-plugin:0.1.0')
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'ru.alfalab.cucumber-reporting'
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    all*.exclude group: 'commons-logging'
+}
+
+dependencies {
+    compile(group: 'org.apache.commons', name: 'commons-lang3', version: '3.7')
+    compile(group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310')
+
+
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.2'
+    compile group: 'org.awaitility', name: 'awaitility', version: '4.0.2'
+    compile 'org.apache.commons:commons-collections4:4.2'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
+
+    // Testes
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion) {
+        exclude group: "com.vaadin.external.google", module: "android-json"
+    }
+
+    implementation 'org.mockito:mockito-junit-jupiter:2.23.0'
+    implementation 'org.mockito:mockito-core:2.23.0'
+
+    testImplementation 'com.jayway.jsonpath:json-path-assert:2.7.0'
+    testRuntime(group: 'com.jayway.jsonpath', name: 'json-path')
+    testCompile group: 'io.cucumber', name: 'cucumber-java', version: cucumberVersion
+    testCompile group: 'io.cucumber', name: 'cucumber-spring', version: cucumberVersion
+    testCompile group: 'io.cucumber', name: 'cucumber-junit-platform-engine', version: cucumberVersion
+    testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.8.2'
+    testCompile group: 'org.junit.platform', name: 'junit-platform-suite-api', version: '1.8.2'
+    testCompile group: 'org.junit.platform', name: 'junit-platform-suite-engine', version: '1.8.2'
+    testCompile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2'
+    testCompile group: 'br.com.six2six', name: 'fixture-factory', version: fixtureVersion
+    testCompile group: 'org.jacoco', name: 'org.jacoco.ant', version: '0.8.5'
+
+    testCompile group: 'io.rest-assured', name: 'rest-assured', version: restAssuredVersion
+}
+
+cucumberReporting {
+    cucumberResultsDirectory = file("${project.buildDir}") // cucumber results dir (eg. cucumber.json location)
+    outputDirectory = file("${project.buildDir}") // directory for save html reports
+
+}
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    reports.junitXml.enabled = false
+    reports.html.enabled = false
+    outputs.upToDateWhen { false }
+    useJUnitPlatform()
+    systemProperty("cucumber.junit-platform.naming-strategy", "long")
+    systemProperty "spring.profiles.active", (System.getProperty("profile") ?: "docker-test")
+}

@@ -1,0 +1,53 @@
+[
+    {
+              "namespace": "testcase.event.avro",
+              "type": "record",
+              "name": "Operation",
+              "fields": [
+                {
+                  "name": "accountId",
+                  "type": "string"
+                },
+                {
+                  "name": "accountNumber",
+                  "type": "int"
+                },
+                {
+                  "name": "accountAgency",
+                  "type": "int"
+                },
+                {
+                   "name": "value",
+                   "type": "double"
+                }
+              ]
+            },
+  {
+    "namespace": "testcase.event.avro",
+    "type": "record",
+    "name": "BalanceAtomicOperation",
+    "fields": [
+      {
+        "name": "operationId",
+        "type": "string"
+      },
+      {
+         "name": "operationType",
+         "type": "string"
+      },
+      {
+        "name": "operationDate",
+        "type": "long"
+      },
+      {
+        "name": "operations",
+        "type": [
+          {
+             "type": "array",
+             "items": "Operation"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,221 @@
+buildscript {
+    ext {
+        springCloudVersion = 'Hoxton.SR4'
+        avroPluginVersion = '0.9.1'
+        springBootVersion = '2.2.6.RELEASE'
+        lombokVersion = '1.18.12'
+    }
+
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+        classpath("com.commercehub.gradle.plugin:gradle-avro-plugin:${avroPluginVersion}")
+    }
+}
+
+apply plugin: 'java'
+
+allprojects {
+    apply plugin: 'jacoco'
+
+    sourceCompatibility = 1.11
+    targetCompatibility = 1.11
+
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+
+    compileJava {
+        options.compilerArgs << '-parameters'
+    }
+
+    repositories {
+    	mavenCentral()
+    	maven {
+        	url "https://packages.confluent.io/maven/"
+    	}
+    }
+
+    jacoco {
+        toolVersion = "0.8.5"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    dependencies {
+        //Mockito
+        testImplementation "org.mockito:mockito-junit-jupiter:2.28.2"
+        testImplementation "org.mockito:mockito-core:2.28.2"
+
+        //jUnit
+        testCompile('org.junit.jupiter:junit-jupiter:5.8.2')
+
+
+        compile group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+
+        //Lombok
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.3")
+
+        implementation 'com.google.collections:google-collections:1.0-rc2'
+
+        //Tests
+        testCompile('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        }
+    }
+
+    jacocoTestReport {
+        reports {
+            html.enabled = true
+            xml.enabled = true
+            csv.enabled = false
+            html.destination file("${buildDir}/reports/jacocoHtml")
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.2
+                }
+            }
+        }
+    }
+
+    check.dependsOn jacocoTestCoverageVerification
+
+    springBoot {
+        buildInfo()
+    }
+}
+
+project(':balance-search-api') {
+
+    apply plugin: 'application'
+
+    mainClassName = 'testcase.api.BalanceSearchAPIStarter'
+
+    dependencies {
+        compile project(':balance-search-domain')
+
+        // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
+        implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+
+    }
+}
+
+project(':balance-search-listener') {
+
+    apply plugin: 'application'
+
+    apply plugin: 'com.commercehub.gradle.plugin.avro'
+
+    configurations {
+        all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
+    }
+
+    mainClassName = 'testcase.listener.BalanceSearchListenerStarter'
+
+    dependencies {
+        compile project(':balance-search-domain')
+
+        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+
+        implementation(group: 'org.springframework.kafka', name: 'spring-kafka', version: '2.3.7.RELEASE')
+        implementation group: 'org.apache.avro', name: 'avro', version: '1.8.1'
+
+        compile("io.confluent:kafka-avro-serializer:3.2.1")
+
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.data:spring-data-envers:2.2.4.RELEASE'
+    }
+}
+
+project(':balance-search-domain') {
+    bootJar {
+        enabled = false
+    }
+
+    jar {
+        enabled = true
+    }
+
+    configurations {
+        all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
+    }
+
+    apply plugin: 'com.commercehub.gradle.plugin.avro'
+
+
+    dependencies {
+
+        compile project(':balance-search-persistence')
+
+        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+
+        compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion)
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+
+        implementation(group: 'org.springframework.kafka', name: 'spring-kafka', version: '2.3.7.RELEASE')
+        implementation group: 'org.apache.avro', name: 'avro', version: '1.8.1'
+
+        compile("io.confluent:kafka-avro-serializer:3.2.1")
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDir 'build/generated-main-avro-java'
+            }
+        }
+    }
+}
+
+project(':balance-search-persistence') {
+    bootJar {
+        enabled = false
+    }
+
+    jar {
+        enabled = true
+    }
+
+    dependencies {
+
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+
+        implementation 'org.hibernate.validator:hibernate-validator'
+
+        runtimeOnly 'com.h2database:h2'
+
+        compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    }
+}

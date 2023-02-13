@@ -1,0 +1,134 @@
+buildscript {
+    ext {
+        springCloudVersion = 'Hoxton.SR4'
+        avroPluginVersion = '0.9.1'
+        springBootVersion = '2.2.6.RELEASE'
+        springfoxVersion = '2.9.2'
+        protobufVersion = '3.4.0'
+        httpclientCacheVersion = '4.5.3'
+        hystrixVersion = '2.2.10.RELEASE'
+        lombokVersion = '1.18.12'
+    }
+
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+        classpath("com.commercehub.gradle.plugin:gradle-avro-plugin:0.9.1")
+    }
+}
+
+configurations.all {
+    exclude module: 'slf4j-log4j12'
+}
+
+apply plugin: 'java'
+apply plugin: "io.spring.dependency-management"
+apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+apply plugin: 'com.commercehub.gradle.plugin.avro'
+apply plugin: 'jacoco'
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://packages.confluent.io/maven/"
+    }
+}
+
+mainClassName = 'testcase.APIStarter'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'build/generated-main-avro-java'
+        }
+    }
+}
+
+dependencies {
+
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+    compile 'org.apache.commons:commons-collections4:4.4'
+
+    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+    implementation 'org.springframework.kafka:spring-kafka:2.3.7.RELEASE'
+
+    // Avro
+    implementation 'io.confluent:kafka-avro-serializer:3.2.1'
+    implementation group: 'org.apache.avro', name: 'avro', version: '1.8.1'
+
+
+    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+
+    //Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // Hystrix - Circuit Breaker
+    compile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: hystrixVersion)
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix-dashboard', version: hystrixVersion
+
+    runtimeOnly 'com.h2database:h2'
+
+    //Tests
+    testCompile('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    testCompile('org.junit.jupiter:junit-jupiter:5.8.2')
+    testCompile "org.mockito:mockito-junit-jupiter:2.28.2"
+    testCompile "org.mockito:mockito-core:2.28.2"
+    testCompile(group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310')
+    testCompile 'org.awaitility:awaitility:3.1.1'
+    compile("org.springframework.cloud:spring-cloud-starter-sleuth:2.1.0.RELEASE")
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled false
+        html.destination file("${buildDir}/reports/jacocoHtml")
+    }
+}
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.2
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification

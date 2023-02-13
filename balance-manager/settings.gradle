@@ -1,0 +1,6 @@
+rootProject.name = 'balance-manager'
+include 'balance-manager-api'
+include 'balance-manager-listener'
+include 'balance-manager-domain'
+include 'balance-manager-persistence'
+

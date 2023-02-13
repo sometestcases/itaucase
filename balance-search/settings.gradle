@@ -1,0 +1,6 @@
+rootProject.name = 'balance-search'
+include 'balance-search-api'
+include 'balance-search-listener'
+include 'balance-search-domain'
+include 'balance-search-persistence'
+

@@ -1,0 +1,29 @@
+[
+  {
+    "namespace": "testcase.event.avro",
+    "type": "record",
+    "name": "AccountCreated",
+    "fields": [
+      {
+        "name": "accountId",
+        "type": "string"
+      },
+      {
+         "name": "customerId",
+         "type": "string"
+      },
+      {
+        "name": "creationDate",
+        "type": "long"
+      },
+      {
+        "name": "number",
+        "type": "int"
+      },
+      {
+        "name": "agency",
+        "type": "int"
+      }
+    ]
+  }
+]

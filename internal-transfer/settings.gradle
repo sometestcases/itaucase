@@ -1,0 +1,6 @@
+rootProject.name = 'internal-transfer'
+include 'internal-transfer-api'
+include 'internal-transfer-listener'
+include 'internal-transfer-domain'
+include 'internal-transfer-persistence'
+

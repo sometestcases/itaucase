@@ -1,0 +1,37 @@
+[
+  {
+    "namespace": "testcase.event.avro",
+    "type": "record",
+    "name": "BalanceUpdate",
+    "fields": [
+      {
+        "name": "accountId",
+        "type": "string"
+      },
+      {
+        "name": "number",
+        "type": "int"
+      },
+      {
+        "name": "agency",
+        "type": "int"
+      },
+      {
+         "name": "balance",
+         "type": "double"
+      },
+      {
+        "name": "updateOrder",
+        "type": "long"
+      },
+      {
+        "name": "updateDate",
+        "type": "long"
+      },
+      {
+        "name": "blocked",
+        "type": "boolean"
+      }
+    ]
+  }
+]
