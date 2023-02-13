@@ -37,6 +37,7 @@ Segue o diagrama da solução proposta, abaixo: <br>
 
 - Não subi um Redis para o Balance Search como mostra a arquitetura, como mencionei, tive que escolher algumas coisas para deixar de fazer por conta do prazo e tamanho da arquitetura, e vi isso como secundario pelo menos para demonstrar o funcionamento, afinal ja é um micro-serviço separado e com base separada, o Redis seria uma melhoria.
 
+- Utilizei Java 11, com uma versão do Spring Boot que não é a mais recente possível, por questão de velocidade de desenvolvimento mesmo, pois ja testei muito essa stack utilizada é compativel com todas as bibliotecas que coloquei no projeto evitando assim alguns tipos de provaveis falhas de compatibilidade que tomariam mais tempo de desenvolvimento para resolver se eu optasse pelo ideal que seria usar o Spring Boot mais recente com Java 17 pelo menos, como isso não interfere significativamente no resultado final, segui essa linha mesmo.  
 
 # Como Executar
 
@@ -79,5 +80,7 @@ Todas API's desenvolvidas, estão documentadas conforme a especificação OpenAP
 
 - Balance Search: Essa aplicação replica atualizações de saldo da conta, para disponibilização da consulta, que fica totalmente desacoplada do restante da arquitetura, funcionando na falha de qualquer outro micro-serviço, nesse caso a chave do tópico do kafka é o id da conta, garantindo que não havera concorrencia de informação para a mesma conta, além disso dentro esse evento tem um mecanismo referente a ordem do update, para garantir que os updates sejam feitos na ordem correta nessa aplicação e o saldo nunca permaneça errado, pode ter alguns millisegundos de delay para o consumo do evento do kafka, mas não considero isso um problema para consulta de saldo. 
 
+# Build
 
+Todos projetos usam Gradle e podem ser buildados com o comando "./gradlew build"
 
