@@ -35,6 +35,8 @@ Segue o diagrama da solução proposta, abaixo: <br>
 
 - O Dockerfile de todos projetos estão dentro de cada um, sendo possível buildar a imagem com facilidade novamente se necessário 
 
+- Não subi um Redis para o Balance Search como mostra a arquitetura, como mencionei, tive que escolher algumas coisas para deixar de fazer por conta do prazo e tamanho da arquitetura, e vi isso como secundario pelo menos para demonstrar o funcionamento, afinal ja é um micro-serviço separado e com base separada, o Redis seria uma melhoria.
+
 
 # Como Executar
 
@@ -48,6 +50,9 @@ Conforme mencionado acima, basta ter o docker compose instalado, e dentro da pas
 - Internal Transfer Listener -> localhost:11115
 - Balance Search API -> localhost:11116
 - Balance Search Listener -> localhost:11117
+
+Também serão iniciadas algumas dependencias necessárias para rodar, como Kafka, Zookeeper, Schema Registry, e Mocks
+
 <br>
 <br>
 Após iniciar o projeto, é possível executar os testes integrados, entrando dentro da pasta do projeto 'integration-test', e executando o comando './gradlew integrationTest'
