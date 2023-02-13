@@ -14,7 +14,7 @@ Segue o diagrama da solução proposta, abaixo: <br>
 
 <br>
 
-- Foi escolhido banco oracle para todas aplicações, tendo em vista que ele possui recurso de DataRedaction que é importante para garantir o permissionamento adequado da informação financeira, além disso, como todos bancos relacionais, tem mecanismos que podem ser utilizados para garantir a integridade da informação e atomicidade das transações, além disso tenho bom histórico desse banco para trabalhar com grande volume de informação.
+- Foi escolhido banco oracle para todas aplicações, tendo em vista que ele possui recurso de DataRedaction que é importante para garantir o permissionamento adequado da informação financeira, além disso, como todos bancos relacionais, tem mecanismos que podem ser utilizados para garantir a integridade da informação e atomicidade das transações, e também tenho bom histórico desse banco para trabalhar com grande volume de informação.
 
 <br>
 
