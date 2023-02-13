@@ -33,6 +33,8 @@ Segue o diagrama da solução proposta, abaixo: <br>
 
 - Não deu tempo de escrever todos testes unitários ideias, escrevi somente alguns no 'account-api' para não ficar sem nada (o case não diz a quantidade de teste unitário que precisa, mas certamente precisaria de mais do que foram escritos, costumo trabalhar com cerca de 70% de cobertura, o que não pude chegar nem perto aqui), como são 7 micro-serviços, ficou inviavel escrever teste para todas classes no prazo estipulado, tentei compensar com os integrados que acho mais relevantes e testam os cenários propostos.
 
+- O Dockerfile de todos projetos estão dentro de cada um, sendo possível buildar a imagem com facilidade novamente se necessário 
+
 
 # Como Executar
 
@@ -50,7 +52,6 @@ Conforme mencionado acima, basta ter o docker compose instalado, e dentro da pas
 <br>
 Após iniciar o projeto, é possível executar os testes integrados, entrando dentro da pasta do projeto 'integration-test', e executando o comando './gradlew integrationTest'
 <br>
-<br>
 
 Todas API's desenvolvidas, estão documentadas conforme a especificação OpenAPI 3, e a documentação pode ser visualizada através do swagger:
 
@@ -61,7 +62,17 @@ Todas API's desenvolvidas, estão documentadas conforme a especificação OpenAP
 
 
 
+# Pontos Chave:
 
+- As operações são indepotentes, ou seja, sempre tem um código que faz parte da regra de negócio e é gerado pelo client, que faz esse papel de 'Indepotency Key' por baixo dos panos.
+
+- Balance Manager: A idéia dele é fazer operações de saldo, de forma atomica, isto é, totalmente 'thread-safe' para a mesma conta, centralizando esse domínio de 'saldo' porque certamente será comum varios processos, não só transferencias, precisarem manipular o saldo do cliente, dentro desse projeto foram desenvolvidos mecanismos de lock utilizando a unique key do banco relacional, que garante 100% de assertividade na hora de realizar uma operações no saldo (no pior caso dando rollback da transação e retornando erro pro cliente), esse serviço é responsável por publicar os eventos de alteração de saldo e operações que realiza, dividi ele em API e Listener, que compartilham o mesmo core, onde o Listener é responsável somente por ler os eventos de cadastro de conta e replicar a conta para a base do serviço.
+
+- Account API: Esse serviço é responsável principalmente pelo cadastro da conta do cliente, tem um papel bem simples de cadastrar na base e publicar o evento de criação de conta.
+
+- Internal Transfer: Essa é a aplicação que de fato realiza a transferencia entre contas orquestrando a operação, no caso faz somente uma chamada ao Balance Manager, para realizar as operações de saldo entre as 2 contas (como se fosse um poxy), e fica aguardando o evento de conclusão da operação, para salvar em base bem como enviar a comunicação ao Bacen, essa aplicação esta dividida em Listener e API também. 
+
+- Balance Search: Essa aplicação replica atualizações de saldo da conta, para disponibilização da consulta, que fica totalmente desacoplada do restante da arquitetura, funcionando na falha de qualquer outro micro-serviço, nesse caso a chave do tópico do kafka é o id da conta, garantindo que não havera concorrencia de informação para a mesma conta, além disso dentro esse evento tem um mecanismo referente a ordem do update, para garantir que os updates sejam feitos na ordem correta nessa aplicação e o saldo nunca permaneça errado, pode ter alguns millisegundos de delay para o consumo do evento do kafka, mas não considero isso um problema para consulta de saldo. 
 
 
 
