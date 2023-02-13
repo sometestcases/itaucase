@@ -23,7 +23,7 @@ Segue o diagrama da solução proposta, abaixo: <br>
 
 # Observações do Desenvolvimento
 
-- Foram desenvolvidos 7 microsserviços demonstrados no diagrama de arquitetura, ficando de fora somente o job de retry de sinc do bacen, porém o retry acontece no consumo do evento também, então como não daria para desenvolver tudo, acabei descartando isso porque não interfere na demostração.
+- Foram desenvolvidos 7 microsserviços demonstrados no diagrama de arquitetura, ficando de fora somente o job de retry de sinc do bacen, porém o retry acontece no consumo do evento também (um número limitado de vezes), então como não daria para desenvolver tudo, acabei descartando isso porque não interfere na demostração.
 
 - Foi utilizado banco H2 ao invés do oracle, porque para fins de demonstração é mais simples, porém como esta usando JPA o que foi implementado serviria para oracle também trocando apenas algumas propriedades.
 
