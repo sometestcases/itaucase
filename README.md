@@ -52,7 +52,7 @@ Conforme mencionado acima, basta ter o docker compose instalado, e dentro da pas
 <br>
 Após iniciar o projeto, é possível executar os testes integrados, entrando dentro da pasta do projeto 'integration-test', e executando o comando './gradlew integrationTest'
 <br>
-
+<br>
 Todas API's desenvolvidas, estão documentadas conforme a especificação OpenAPI 3, e a documentação pode ser visualizada através do swagger:
 
 - Account API -> http://localhost:11111/swagger-ui/index.html
