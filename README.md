@@ -41,13 +41,13 @@ Segue o diagrama da solução proposta, abaixo: <br>
 Conforme mencionado acima, basta ter o docker compose instalado, e dentro da pasta do projeto executar o comando 'docker-compose up', os artefatos que serão iniciados, são:
 <br>
 <br>
-- Account API -> http://localhost:11111
-- Balance Manager API -> http://localhost:11112
-- Blance Manager Listener -> http://localhost:11113
-- Internal Transfer API -> http://localhost:11114
-- Internal Transfer Listener -> http://localhost:11115
-- Balance Search API -> http://localhost:11116
-- Balance Search Listener -> http://localhost:11117
+- Account API -> localhost:11111
+- Balance Manager API -> localhost:11112
+- Blance Manager Listener -> localhost:11113
+- Internal Transfer API -> localhost:11114
+- Internal Transfer Listener -> localhost:11115
+- Balance Search API -> localhost:11116
+- Balance Search Listener -> localhost:11117
 <br>
 <br>
 Após iniciar o projeto, é possível executar os testes integrados, entrando dentro da pasta do projeto 'integration-test', e executando o comando './gradlew integrationTest'
