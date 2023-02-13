@@ -1,0 +1,43 @@
+  [
+    {
+      "httpRequest" : {
+        "method" : "GET",
+        "path" : "/customers/[A-Z][A-Z0-9]*/status"
+      },
+      "httpResponse" : {
+        "body" : "{\"status\": \"ACTIVE\"}",
+        "headers": [
+            {
+                "name": "Content-Type",
+                "values": ["application/json; charset=utf-8"]
+            }
+        ],
+        "statusCode": 200
+      }
+    },
+    {
+      "httpRequest" : {
+        "method" : "GET",
+        "path" : "/customers/[1-9][A-Z0-9]*/status"
+      },
+      "httpResponse" : {
+        "body" : "{\"status\": \"INACTIVE\"}",
+        "headers": [
+            {
+                "name": "Content-Type",
+                "values": ["application/json; charset=utf-8"]
+            }
+        ],  
+        "statusCode": 200
+      }
+    },
+    {
+      "httpRequest" : {
+        "method" : "GET",
+        "path" : "/customers/[0][A-Z0-9]*/status"
+      },
+      "httpResponse" : {
+        "statusCode": 404
+      }
+    }
+]
