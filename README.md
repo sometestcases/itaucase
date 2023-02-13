@@ -11,11 +11,17 @@ Segue o diagrama da solução proposta, abaixo: <br>
 # Observações da Arquitetura
 
 - Foi desconsiderada a questão de autenticação, visto que é só um case de teste, e aumentaria o tempo de desenvolvimento consideravelmente, além de não ter sido solicitado explicitamente nada nesse sentido, e não ser excencial para o funcionamento em sí bem como a apresentação da idéia, porém caso fosse um projeto real seria indispensável.
+
 <br>
+
 - Foi escolhido banco oracle para todas aplicações, tendo em vista que ele possui recurso de DataRedaction que é importante para garantir o permissionamento adequado da informação financeira, além disso, como todos bancos relacionais, tem mecanismos que podem ser utilizados para garantir a integridade da informação e atomicidade das transações, além disso tenho bom histórico desse banco para trabalhar com grande volume de informação.
+
 <br>
+
 - Apesar de solicitado, não contemplei mecanismo de 'rate limit', porque todos esses micro-serviços, estariam em rede interna, não seriam expostos, e cada canal/produto que for utilizar vai ter seu 'BFF' que será exposto, e  nesse caso o rate limit teria que estar nesses serviços que são expostos que terão o IP do cliente.  Até poderia ser implementado um rate limit, porém o IP que esses micro-serviços desse projeto teriam não seria do cliente, e sim das instancias de outras aplicações, ou seja, não seria dos melhores indicadores para ser a chave do 'rate limit', porque quando um IP for limitado ira estar impactando varias requisições que não tem necessáriamente relação com o exceço de chamadas, por isso entendi como uma implementação de benefício contestavel para esse case, que precisaria ser avaliada/discutida com mais calma se fosse um cenário real, e como a principio não impacta na demostração do case e eu tive que selecionar bem o que iria ser feito (por conta do prazo e de a arquitetura ter ficado grande pra implementar), eu descartei isso.
+
 <br>
+
 - Não coloquei uma API Gateway, porque os serviços tem conextos muito diferentes entre sí, além disso seria mais um ponto de falha entre todos eles, mas ainda sim é algo discutivel.
 
 # Observações do Desenvolvimento
