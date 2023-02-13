@@ -68,7 +68,7 @@ Todas API's desenvolvidas, estão documentadas conforme a especificação OpenAP
 
 - Balance Manager: A idéia dele é fazer operações de saldo, de forma atomica, isto é, totalmente 'thread-safe' para a mesma conta, centralizando esse domínio de 'saldo' porque certamente será comum varios processos, não só transferencias para contas de mesma titularidade, precisarem manipular o saldo do cliente, dentro desse projeto foram desenvolvidos mecanismos de lock utilizando a unique key do banco relacional, que garante 100% de assertividade na hora de realizar uma operações no saldo (no pior caso dando rollback da transação e retornando erro pro cliente), esse serviço é responsável por publicar os eventos de alteração de saldo e operações que realiza, dividi ele em API e Listener, que compartilham o mesmo core, onde o Listener é responsável somente por ler os eventos de cadastro de conta e replicar a conta para a base do serviço.
 
-- Account API: Esse serviço é responsável principalmente pelo cadastro da conta do cliente, tem um papel bem simples de cadastrar na base e publicar o evento de criação de conta.
+- Account API: Esse serviço é responsável principalmente pelo cadastro da conta do cliente, tem um papel bem simples de cadastrar na base (realizando somente as validações de cliente ativo/existente) e publicar o evento de criação de conta.
 
 - Internal Transfer: Essa é a aplicação que de fato realiza a transferencia entre contas orquestrando a operação, no caso faz somente uma chamada ao Balance Manager, para realizar as operações de saldo entre as 2 contas (como se fosse um poxy), e fica aguardando o evento de conclusão da operação, para salvar em base bem como enviar a comunicação ao Bacen, essa aplicação esta dividida em Listener e API também. 
 
