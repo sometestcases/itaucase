@@ -13,8 +13,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import testcase.domain.eventPublisher.PublishService;
 import testcase.domain.service.exception.AccountAlreadyInitializedException;
 import testcase.domain.service.exception.AccountInitializeInternalException;
+import testcase.domain.service.mapper.AccountStateMapper;
 import testcase.persistence.entities.Account;
 import testcase.persistence.repositories.AccountRepository;
 import testcase.persistence.utils.TransactionalComponent;
@@ -27,6 +29,12 @@ public class AccountInitializerServiceTest {
 
     @Mock
     AccountRepository accountRepository;
+
+    @Mock
+    PublishService publishService;
+
+    @Mock
+    AccountStateMapper accountStateMapper;
 
     @Spy
     @InjectMocks

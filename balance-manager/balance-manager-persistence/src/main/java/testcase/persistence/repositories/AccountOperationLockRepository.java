@@ -7,5 +7,4 @@ import testcase.persistence.entities.AccountOperationLock;
 @Repository
 public interface AccountOperationLockRepository extends JpaRepository<AccountOperationLock, Long> {
 
-    boolean existsByOperationId(String operationId);
 }

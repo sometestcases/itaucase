@@ -18,6 +18,7 @@ import testcase.domain.service.model.BalanceOperation;
 import testcase.domain.service.model.ExecutedBalanceOperation;
 import testcase.persistence.repositories.AccountOperationLockRepository;
 import testcase.persistence.repositories.AccountRepository;
+import testcase.persistence.repositories.OperationRepository;
 
 @Slf4j
 @Service
@@ -33,7 +34,7 @@ public class BalanceOperationService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private AccountOperationLockRepository accountOperationLockRepository;
+    private OperationRepository operationRepository;
 
     @Autowired
     private ExecutedBalanceOperationMapper executedBalanceOperationMapper;
@@ -52,7 +53,7 @@ public class BalanceOperationService {
                     balanceOperation.getOperationId(), balanceOperation.getOperationType());
             throw new BalanceOperationSizeExcededException();
 
-        } else if (this.accountOperationLockRepository.existsByOperationId(balanceOperation.getOperationId())) {
+        } else if (this.operationRepository.existsByOperationId(balanceOperation.getOperationId())) {
 
             log.warn("stage=operation-already-executed, operationId={}, type={}",
                     balanceOperation.getOperationId(), balanceOperation.getOperationType());

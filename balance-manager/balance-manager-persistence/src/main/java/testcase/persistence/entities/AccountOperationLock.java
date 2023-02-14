@@ -35,6 +35,7 @@ public class AccountOperationLock {
     @Column(name = "NUM_LOCK")
     private Long lockNumber;
 
-    @Column(name = "COD_OPERATION")
-    private String operationId;
+    @JoinColumn(name = "IDT_OPERATION")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Operation operation;
 }

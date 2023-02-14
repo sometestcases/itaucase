@@ -21,8 +21,10 @@ import testcase.domain.service.model.SingleBalanceOperation;
 import testcase.domain.service.preAtomicOperationTransactionalActions.PreOperationTransactionalAction;
 import testcase.persistence.entities.Account;
 import testcase.persistence.entities.AccountOperationLock;
+import testcase.persistence.entities.Operation;
 import testcase.persistence.repositories.AccountOperationLockRepository;
 import testcase.persistence.repositories.AccountRepository;
+import testcase.persistence.repositories.OperationRepository;
 
 @Slf4j
 @Component
@@ -30,6 +32,9 @@ public class BalanceAtomicOperationComponent {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private OperationRepository operationRepository;
 
     @Autowired
     private AccountOperationLockRepository accountOperationLockRepository;
@@ -66,18 +71,22 @@ public class BalanceAtomicOperationComponent {
             preOperationTransactionalAction.execute(accounts, balanceOperation.getSingleBalanceOperations(), executionDate);
         }
 
-        for (SingleBalanceOperation operation : balanceOperation.getSingleBalanceOperations()) {
+        Operation operation = new Operation();
+        operation.setOperationId(balanceOperation.getOperationId());
+        operation = this.operationRepository.save(operation);
 
-            Account account = accounts.get(operation.getAccountId());
+        for (SingleBalanceOperation singleBalanceOperation : balanceOperation.getSingleBalanceOperations()) {
 
-            account.setBalance(account.getBalance().add(operation.getValue()));
+            Account account = accounts.get(singleBalanceOperation.getAccountId());
+
+            account.setBalance(account.getBalance().add(singleBalanceOperation.getValue()));
             account.setLastBalanceUpdateDate(executionDate);
 
             Long lockNumber = account.getLockNumber();
 
             AccountOperationLock accountOperationLock = new AccountOperationLock();
             accountOperationLock.setAccount(account);
-            accountOperationLock.setOperationId(balanceOperation.getOperationId());
+            accountOperationLock.setOperation(operation);
             accountOperationLock.setLockNumber(lockNumber);
             this.accountOperationLockRepository.save(accountOperationLock);
 
@@ -115,11 +124,13 @@ public class BalanceAtomicOperationComponent {
             throw new BalanceAtomicOperationException(BalanceTransactionalOperationError.ALREADY_BLOCKED_ACCOUNT);
         }
 
-        String operationId = UUID.randomUUID().toString().replace("-", "").toUpperCase();
+        Operation operation = new Operation();
+        operation.setOperationId(UUID.randomUUID().toString().replace("-", "").toUpperCase());
+        operation = this.operationRepository.save(operation);
 
         AccountOperationLock lock = new AccountOperationLock();
         lock.setAccount(account);
-        lock.setOperationId(operationId);
+        lock.setOperation(operation);
         lock.setLockNumber(account.getLockNumber());
         this.accountOperationLockRepository.save(lock);
 
