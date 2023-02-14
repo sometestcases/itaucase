@@ -59,7 +59,7 @@ Também serão iniciadas algumas dependencias necessárias para rodar, como Kafk
 
 <br>
 <br>
-Após iniciar o projeto, é possível executar os testes integrados, entrando dentro da pasta do projeto 'integration-test', e executando o comando './gradlew integrationTest'
+Após iniciar o projeto, é possível executar os testes integrados, entrando dentro da pasta do projeto 'integration-test', e executando o comando './gradlew integrationTest' (na primeira execução é comum o 1º teste falhar, porque como os mocks estão recem iniciados, demoram mais para responder e caem no timeout de chamada da aplicação)
 <br>
 <br>
 Todas API's desenvolvidas, estão documentadas conforme a especificação OpenAPI 3, e a documentação pode ser visualizada através do swagger:
