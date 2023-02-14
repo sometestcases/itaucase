@@ -75,13 +75,7 @@ public class BalanceAtomicOperationComponent {
         operation.setOperationId(balanceOperation.getOperationId());
         operation = this.operationRepository.save(operation);
 
-        for (SingleBalanceOperation singleBalanceOperation : balanceOperation.getSingleBalanceOperations()) {
-
-            Account account = accounts.get(singleBalanceOperation.getAccountId());
-
-            account.setBalance(account.getBalance().add(singleBalanceOperation.getValue()));
-            account.setLastBalanceUpdateDate(executionDate);
-
+        for (Account account : accounts.values()) {
             Long lockNumber = account.getLockNumber();
 
             AccountOperationLock accountOperationLock = new AccountOperationLock();
@@ -91,6 +85,12 @@ public class BalanceAtomicOperationComponent {
             this.accountOperationLockRepository.save(accountOperationLock);
 
             account.setLockNumber(lockNumber + 1);
+        }
+
+        for (SingleBalanceOperation singleBalanceOperation : balanceOperation.getSingleBalanceOperations()) {
+            Account account = accounts.get(singleBalanceOperation.getAccountId());
+            account.setBalance(account.getBalance().add(singleBalanceOperation.getValue()));
+            account.setLastBalanceUpdateDate(executionDate);
         }
 
         ImmutableSet.Builder<AccountState> resultBuilder = ImmutableSet.builder();
